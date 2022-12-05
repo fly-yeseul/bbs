@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>게시글 읽기</title>
+    <script th:if="${bbsArticleReadVo.getResult().name().equals('NOT_FOUND')}">
+        alert('존재하지 않거나 삭제된 게시글입니다.');
+        window.history.back();
+    </script>
+    <script th:if="${bbsArticleReadVo.getResult().name().equals('NOT_ALLOWED')}">
+        alert('해당 게시글을 읽을 권한이 없습니다.');
+        window.history.back();
+    </script>
+</head>
+<body>
+<table>
+    <thead>
+    <tr>
+        <th>제목</th>
+        <td colspan="5" th:text="${bbsArticleReadVo.getTitle()}"><!-- 제목 --></td>
+    </tr>
+    <tr>
+        <th>작성자</th>
+        <td th:text="${bbsArticleReadVo.getUserNickname()}"><!-- 작성자 --></td>
+        <th>일시</th>
+        <td th:text="${#dates.format(bbsArticleReadVo.getWrittenAt(), 'yyyy-MM-dd HH:mm:ss')}"><!-- 일시 --></td>
+        <th>조회수</th>
+        <td th:text="${bbsArticleReadVo.getView()}"><!-- 조회수 --></td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="6" th:text="${bbsArticleReadVo.getContent()}"><!-- 내용 --></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="6">
+            <a th:href="@{'/bbs/list/' + ${bbsArticleReadVo.getBoardId()} + '/' + ${p == null ? 1 : p}}">
+                <button>목록</button>
+            </a>
+            <!-- <a onclick="javascript:window.history.back()" th:if="${bid == null || p == null}">-->
+            <!--     <button>뒤로가기</button>-->
+            <!-- </a>-->
+            <button th:if="${userEntity != null && (userEntity.getEmail().equals(bbsArticleReadVo.getUserEmail()) || userEntity.getLevel() == 1)}">삭제</button>
+            <button th:if="${userEntity != null && (userEntity.getEmail().equals(bbsArticleReadVo.getUserEmail()) || userEntity.getLevel() == 1)}">수정</button>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <form id="comment-form" method="post">
+                <label>
+                    <span hidden>댓글</span>
+                    <input maxlength="100" name="comment" placeholder="댓글 입력" type="text">
+                </label>
+                <input type="submit" value="댓글 작성">
+            </form>
+        </td>
+    </tr>
+    <tr th:if="${bbsArticleReadVo.getComments().size() == 0}">
+        <td colspan="6">표시할 댓글이 없습니다.</td>
+    </tr>
+    <tr th:each="comment : ${bbsArticleReadVo.getComments()}">
+        <td th:text="${bbsArticleReadVo.getCommentUserNicknames().get(comment.getIndex())}"><!-- 댓글 작성자 --></td>
+        <td th:text="${comment.getContent()}"><!-- 댓글 내용 --></td>
+        <td th:text="${#dates.format(comment.getWrittenAt(), 'yyyy-MM-dd HH:mm:ss')}"><!-- 댓글 일시 --></td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

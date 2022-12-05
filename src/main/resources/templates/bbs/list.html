@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="../../static/bbs/resources/stylesheets/list.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>게시판</title>
+    <link rel="stylesheet" th:href="@{/bbs/resources/stylesheets/list.css}">
+    <script th:if="${bbsBoardListVo.getResult().name().equals('NOT_FOUND')}">
+        alert('존재하지 않는 게시판입니다.');
+        window.history.back();
+    </script>
+    <script th:if="${bbsBoardListVo.getResult().name().equals('NOT_ALLOWED')}">
+        alert('게시판을 확인할 권한이 없습니다.');
+        window.history.back();
+    </script>
+</head>
+<body>
+<h1>게시판</h1>
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>조회수</th>
+        <th>일시</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${bbsBoardListVo.getArticles().size() == 0}">
+        <td class="empty" colspan="5">표시할 게시글이 없습니다.</td>
+    </tr>
+    <tr th:each="article : ${bbsBoardListVo.getArticles()}"
+        th:object="${article}">
+        <td th:text="*{getIndex()}"><!-- 글 번호 --></td>
+        <td>
+            <a class="text" target="_self"
+               th:text="*{getTitle()}"
+               th:href="@{'/bbs/read/' + *{getIndex()}(p=${bbsBoardListVo.getRequestPage()})}"><!-- 제목 --></a>
+            <span class="comment"
+                  th:text="${'['+ bbsBoardListVo.getArticleCommentCounts().get(article.getIndex()) +']'}"><!-- 댓글 개수 --></span>
+        </td>
+        <td th:text="${bbsBoardListVo.getArticleNicknames().get(article.getIndex()) }"><!-- 작성자 --></td>
+        <td th:text="*{getView()}"><!-- 조회수 --></td>
+        <td th:text="*{#dates.format(getWrittenAt(), 'yyyy-MM-dd HH:mm:ss')}"><!-- 작성 일시 --></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr class="search-tr">
+        <td colspan="5">
+            <form id="search-form">
+                <label>
+                    <span hidden class="hint">검색 기준</span>
+                    <select name="criteria">
+                        <option selected value="byTitleContent">제목 + 내용</option>
+                        <option value="byTitle">제목</option>
+                        <option value="byNickname">작성자</option>
+                    </select>
+                </label>
+                <label>
+                    <span hidden class="hint">검색어</span>
+                    <input maxlength="50" name="keyword" placeholder="검색어" type="text">
+                </label>
+                <input type="submit" value="검색">
+                <input type="button" value="글 쓰기">
+            </form>
+        </td>
+    </tr>
+    <tr class="page-tr">
+        <td colspan="5">
+            <a th:href="@{'/bbs/list/' + ${bbsBoardListVo.getId()} + '/' + ${bbsBoardListVo.getMinPage()}}"  target="_self"
+               th:if="${bbsBoardListVo.getRequestPage() > bbsBoardListVo.getMinPage()}">&lt;&lt;</a>
+            <a th:href="@{'/bbs/list/' + ${bbsBoardListVo.getId()} + '/' + ${bbsBoardListVo.getRequestPage()-1}}" target="_self"
+               th:if="${bbsBoardListVo.getRequestPage() > bbsBoardListVo.getMinPage()}">&lt;</a>
+
+            <!-- http://127.0.0.1:8080/bbs/list/notice/1 -->
+            <a th:href="@{'/bbs/list/' + ${bbsBoardListVo.getId()} + '/' + ${page}}" target="_self"
+               th:if="${bbsBoardListVo.getRequestPage() > bbsBoardListVo.getStartPage()}"
+               th:each="page : ${#numbers.sequence(bbsBoardListVo.getStartPage(),(bbsBoardListVo.getRequestPage()-1))}"
+               th:text="${page}"></a>
+            <a class="current-page"
+               th:each="page : ${bbsBoardListVo.getRequestPage()}"
+               th:text="${page}"></a>
+            <a th:href="@{'/bbs/list/' + ${bbsBoardListVo.getId()} + '/' + ${page}}" target="_self"
+               th:if="${bbsBoardListVo.getRequestPage() < bbsBoardListVo.getEndPage()}"
+               th:each="page:${#numbers.sequence((bbsBoardListVo.getRequestPage()+1), bbsBoardListVo.getEndPage())}"
+               th:text="${page}"></a>
+
+
+
+            <a th:href="@{'/bbs/list/' + ${bbsBoardListVo.getId()} + '/' + ${bbsBoardListVo.getRequestPage()+1}}"  target="_self"
+               th:if="${bbsBoardListVo.getRequestPage()<bbsBoardListVo.getMaxPage()}">&gt;</a>
+            <a th:href="@{'/bbs/list/' + ${bbsBoardListVo.getId()} + '/' + ${bbsBoardListVo.getMaxPage()}}"  target="_self"
+               th:if="${bbsBoardListVo.getRequestPage()<bbsBoardListVo.getMaxPage()}">&gt;&gt;</a>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

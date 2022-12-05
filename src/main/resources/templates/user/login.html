@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>로그인</title>
+    <link rel="stylesheet" th:href="@{/user/resources/stylesheets/login.css}">
+    <script src="https://kit.fontawesome.com/e099593f60.js" crossorigin="anonymous"></script>
+    <script th:src="@{/user/resources/scripts/login.js}" defer></script>
+</head>
+<body>
+<div class="background">
+    <div class="cover"></div>
+    <video autoplay loop muted class="video" th:src="@{/user/resources/videos/video.mp4}"></video>
+</div>
+<form class="form login" id="login-form">
+    <div class="cover" rel="cover"></div>
+    <h1 class="title">로그인</h1>
+    <div class="input-container" th:if="${session.userEntity == null}">
+        <label class="label">
+            <span class="text">이메일</span>
+            <input class="input" maxlength="50" name="email" placeholder="이메일" type="email">
+            <i class="icon fa-solid fa-envelope"></i>
+        </label>
+        <label class="label">
+            <span class="text">비밀번호</span>
+            <input class="input" maxlength="100" name="password" placeholder="비밀번호" type="password">
+            <i class="icon fa-solid fa-key"></i>
+        </label>
+        <input class="button blue" type="submit" value="로그인">
+        <ul class="menu">
+            <li class="item">
+                <span class="text">이메일 혹은 비밀번호를 분실하셨나요?</span>
+                <a class="link" href="#" data-link-mode="spa" data-link-func="recover">계정 복구</a>
+            </li>
+            <li class="item">
+                <span class="text">아직 계정이 없으신가요?</span>
+                <a class="link" href="#" data-link-mode="spa" data-link-func="register">회원 가입</a>
+            </li>
+        </ul>
+    </div>
+    <div th:if="${session.userEntity != null}">
+        <b th:text="${session.userEntity.getNickname()}"></b>
+        <span>님 환영합니다!</span>
+    </div>
+</form>
+<form class="form register aside" id="register-form">
+    <div class="cover visible" rel="cover"></div>
+    <h1 class="title">회원가입</h1>
+    <div class="input-container">
+        <label class="label">
+            <span class="text">이메일</span>
+            <input class="input" maxlength="50" name="email" placeholder="이메일" type="email">
+            <i class="icon fa-solid fa-envelope"></i>
+        </label>
+        <label class="label">
+            <span class="text">비밀번호</span>
+            <input class="input" maxlength="100" name="password" placeholder="비밀번호" type="password">
+            <i class="icon fa-solid fa-key"></i>
+        </label>
+        <label class="label">
+            <span class="text">비밀번호 재입력</span>
+            <input class="input" maxlength="100" name="password-check" placeholder="비밀번호 재입력" type="password">
+            <i class="icon fa-solid fa-key"></i>
+        </label>
+        <label class="label">
+            <span class="text">닉네임</span>
+            <input class="input" maxlength="10" name="nickname" placeholder="닉네임" type="text">
+            <i class="icon fa-solid fa-user"></i>
+        </label>
+        <label class="label">
+            <span class="text">연락처</span>
+            <input class="input" maxlength="11" name="contact" placeholder="연락처(- 없이)" type="text">
+            <i class="icon fa-solid fa-user"></i>
+        </label>
+        <span class="warning global" rel="global-warning"></span>
+        <input class="button blue" type="submit" value="회원가입">
+        <input class="button" type="button" value="돌아가기" data-link-mode="spa" data-link-func="registerCancel">
+    </div>
+</form>
+</body>
+</html>
